@@ -1,0 +1,1251 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kuis Interaktif Bangun Ruang - Kelas 9 SMP</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Font Awesome untuk Ikon -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc;
+        }
+        /* Custom scrollbar untuk navigasi nomor */
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f1f5f9;
+            border-radius: 8px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 8px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+        .math-formula {
+            font-family: 'Cambria Math', 'Times New Roman', serif;
+        }
+    </style>
+</head>
+<body class="text-slate-800 min-h-screen flex flex-col">
+
+    <!-- Header / Navbar -->
+    <header class="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-indigo-600 text-white flex items-center justify-center shadow-md shadow-indigo-200">
+                    <i class="fa-solid fa-cubes text-lg"></i>
+                </div>
+                <div>
+                    <h1 class="font-bold text-slate-900 text-base sm:text-lg leading-tight">Latihan Ulangan Bangun Ruang</h1>
+                    <p class="text-xs text-slate-500 font-medium">Matematika Kelas 9 SMP • 30 Soal Analisis & Isian</p>
+                </div>
+            </div>
+
+            <!-- Status Penyimpanan & Skor -->
+            <div class="flex items-center gap-2 sm:gap-4">
+                <div id="sync-status" class="hidden sm:flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
+                    <i class="fa-solid fa-cloud-check"></i>
+                    <span>Tersimpan Otomatis</span>
+                </div>
+                <div class="bg-indigo-50 border border-indigo-200 px-3 py-1.5 rounded-xl flex items-center gap-2">
+                    <span class="text-xs font-semibold text-indigo-700 hidden sm:inline">Skor:</span>
+                    <span id="score-display" class="font-extrabold text-indigo-700 text-sm sm:text-base">0 / 30</span>
+                </div>
+                <button onclick="openResetModal()" class="p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-xl transition-colors" title="Reset Semua Jawaban">
+                    <i class="fa-solid fa-rotate-right"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+            
+            <!-- Kolom Kiri: Area Soal Utama (8 Kolom di Desktop) -->
+            <div class="lg:col-span-8 flex flex-col gap-5">
+                
+                <!-- Card Soal -->
+                <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+                    <!-- Header Card Soal -->
+                    <div class="bg-slate-50/80 border-b border-slate-200 px-5 py-4 flex flex-wrap items-center justify-between gap-2">
+                        <div class="flex items-center gap-2.5">
+                            <span id="question-number-badge" class="px-3 py-1 rounded-lg bg-indigo-600 text-white font-bold text-sm">
+                                Soal #1
+                            </span>
+                            <span id="question-topic-badge" class="px-3 py-1 rounded-lg bg-indigo-50 text-indigo-700 border border-indigo-200 font-semibold text-xs">
+                                Prisma Tegak
+                            </span>
+                        </div>
+                        <div id="question-status-pill" class="text-xs font-semibold px-3 py-1 rounded-full bg-slate-200 text-slate-600">
+                            Belum Dijawab
+                        </div>
+                    </div>
+
+                    <!-- Isi Soal -->
+                    <div class="p-5 sm:p-7">
+                        <!-- Ilustrasi SVG Bangun Ruang Dinamis -->
+                        <div id="question-illustration" class="mb-5 flex justify-center bg-slate-50 rounded-xl p-4 border border-slate-100">
+                            <!-- Diisi via JS -->
+                        </div>
+
+                        <!-- Teks Pertanyaan -->
+                        <div id="question-text" class="text-slate-800 text-base sm:text-lg leading-relaxed font-medium mb-6">
+                            <!-- Diisi via JS -->
+                        </div>
+
+                        <!-- Area Pilihan Ganda (A, B, C, D) -->
+                        <div class="space-y-3">
+                            <div id="options-container" class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                <!-- Tombol Opsi A, B, C, D diisi via JS -->
+                            </div>
+
+                            <!-- Feedback Langsung (Benar / Salah) -->
+                            <div id="feedback-box" class="hidden mt-4 p-4 rounded-xl border flex items-start gap-3 transition-all">
+                                <div id="feedback-icon" class="text-xl mt-0.5"></div>
+                                <div class="flex-1">
+                                    <h4 id="feedback-title" class="font-bold text-sm sm:text-base"></h4>
+                                    <p id="feedback-desc" class="text-xs sm:text-sm mt-0.5"></p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Tombol Show / Hide Pembahasan (Hanya muncul setelah soal dijawab) -->
+                        <div id="solution-wrapper" class="hidden mt-6 pt-5 border-t border-slate-100">
+                            <button 
+                                onclick="toggleSolution()" 
+                                id="toggle-solution-btn"
+                                class="w-full sm:w-auto px-4 py-2.5 rounded-xl border-2 border-slate-200 hover:border-indigo-300 hover:bg-indigo-50/50 text-slate-700 font-semibold text-sm flex items-center justify-center gap-2 transition-all"
+                            >
+                                <i id="solution-btn-icon" class="fa-solid fa-eye text-indigo-600"></i>
+                                <span id="solution-btn-text">Tampilkan Kunci Jawaban & Pembahasan</span>
+                            </button>
+
+                            <!-- Box Pembahasan (Tersembunyi secara default) -->
+                            <div id="solution-box" class="hidden mt-4 p-5 rounded-2xl bg-indigo-50/60 border border-indigo-200 text-slate-800">
+                                <div class="flex items-center justify-between border-b border-indigo-200/80 pb-3 mb-3">
+                                    <span class="font-bold text-indigo-900 text-sm flex items-center gap-2">
+                                        <i class="fa-solid fa-book-open text-indigo-600"></i>
+                                        Langkah Penyelesaian (Pembahasan)
+                                    </span>
+                                    <span id="solution-final-badge" class="px-2.5 py-1 rounded-lg bg-indigo-600 text-white font-bold text-xs">
+                                        Jawaban: -
+                                    </span>
+                                </div>
+                                <div id="solution-steps" class="space-y-2 text-sm leading-relaxed text-slate-700">
+                                    <!-- Langkah penyelesaian diisi via JS -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Footer Navigasi Prev / Next -->
+                    <div class="bg-slate-50 border-t border-slate-200 px-5 py-4 flex items-center justify-between">
+                        <button 
+                            onclick="prevQuestion()" 
+                            id="prev-btn"
+                            class="px-4 py-2.5 rounded-xl bg-white border border-slate-300 hover:bg-slate-100 disabled:opacity-40 disabled:pointer-events-none text-slate-700 font-semibold text-sm flex items-center gap-2 transition-all shadow-sm"
+                        >
+                            <i class="fa-solid fa-arrow-left"></i>
+                            <span>Sebelumnya</span>
+                        </button>
+
+                        <span id="mobile-progress-text" class="text-xs font-bold text-slate-500">
+                            1 dari 30
+                        </span>
+
+                        <button 
+                            onclick="nextQuestion()" 
+                            id="next-btn"
+                            class="px-4 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 disabled:opacity-40 disabled:pointer-events-none text-white font-semibold text-sm flex items-center gap-2 transition-all shadow-sm"
+                        >
+                            <span>Selanjutnya</span>
+                            <i class="fa-solid fa-arrow-right"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Kolom Kanan: Panel Navigasi & Statistik (4 Kolom di Desktop) -->
+            <div class="lg:col-span-4 flex flex-col gap-5">
+                
+                <!-- Ringkasan Progres -->
+                <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm">
+                    <div class="flex items-center justify-between mb-3">
+                        <h3 class="font-bold text-slate-800 text-sm">Progres Pengerjaan</h3>
+                        <span id="progress-percent" class="text-xs font-extrabold text-indigo-600">0%</span>
+                    </div>
+                    <div class="w-full h-2.5 bg-slate-100 rounded-full overflow-hidden mb-4">
+                        <div id="progress-bar" class="h-full bg-indigo-600 rounded-full transition-all duration-300" style="width: 0%"></div>
+                    </div>
+                    <div class="grid grid-cols-3 gap-2 text-center">
+                        <div class="p-2.5 rounded-xl bg-emerald-50 border border-emerald-100">
+                            <div id="stat-correct" class="font-extrabold text-emerald-700 text-lg">0</div>
+                            <div class="text-[11px] font-semibold text-emerald-600">Benar</div>
+                        </div>
+                        <div class="p-2.5 rounded-xl bg-rose-50 border border-rose-100">
+                            <div id="stat-wrong" class="font-extrabold text-rose-700 text-lg">0</div>
+                            <div class="text-[11px] font-semibold text-rose-600">Salah</div>
+                        </div>
+                        <div class="p-2.5 rounded-xl bg-slate-50 border border-slate-200">
+                            <div id="stat-empty" class="font-extrabold text-slate-700 text-lg">30</div>
+                            <div class="text-[11px] font-semibold text-slate-500">Kosong</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Grid Navigasi 30 Nomor -->
+                <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm">
+                    <div class="flex items-center justify-between mb-3">
+                        <h3 class="font-bold text-slate-800 text-sm">Navigasi Nomor Soal</h3>
+                        <span class="text-xs text-slate-400">Klik nomor untuk pindah</span>
+                    </div>
+
+                    <!-- Filter Materi -->
+                    <div class="mb-3">
+                        <select id="topic-filter" onchange="filterNavGrid()" class="w-full text-xs font-semibold text-slate-700 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 outline-none focus:border-indigo-500">
+                            <option value="ALL">Semua Topik (1 - 30)</option>
+                            <option value="Prisma">Prisma (No. 1 - 5)</option>
+                            <option value="Limas">Limas (No. 6 - 10)</option>
+                            <option value="Tabung">Tabung (No. 11 - 16)</option>
+                            <option value="Kerucut">Kerucut (No. 17 - 22)</option>
+                            <option value="Bola">Bola (No. 23 - 26)</option>
+                            <option value="Gabungan">Kubus, Balok & Gabungan (No. 27 - 30)</option>
+                        </select>
+                    </div>
+
+                    <div id="nav-grid" class="grid grid-cols-5 sm:grid-cols-6 lg:grid-cols-5 gap-2 max-h-[340px] overflow-y-auto p-1 custom-scrollbar">
+                        <!-- Tombol 1-30 diisi via JS -->
+                    </div>
+
+                    <!-- Legenda Warna -->
+                    <div class="mt-4 pt-3 border-t border-slate-100 flex flex-wrap items-center justify-between gap-2 text-[11px] font-medium text-slate-500">
+                        <div class="flex items-center gap-1.5">
+                            <span class="w-3 h-3 rounded bg-emerald-500 inline-block"></span> Benar
+                        </div>
+                        <div class="flex items-center gap-1.5">
+                            <span class="w-3 h-3 rounded bg-rose-500 inline-block"></span> Salah
+                        </div>
+                        <div class="flex items-center gap-1.5">
+                            <span class="w-3 h-3 rounded bg-slate-100 border border-slate-300 inline-block"></span> Belum
+                        </div>
+                        <div class="flex items-center gap-1.5">
+                            <span class="w-3 h-3 rounded ring-2 ring-indigo-600 bg-white inline-block"></span> Aktif
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </main>
+
+    <!-- Custom Modal Konfirmasi Reset (Tanpa confirm() bawaan browser) -->
+    <div id="reset-modal" class="hidden fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-200">
+            <div class="w-12 h-12 rounded-full bg-rose-100 text-rose-600 flex items-center justify-center text-xl mb-4">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+            </div>
+            <h3 class="text-lg font-bold text-slate-900 mb-2">Ulangi Kuis dari Awal?</h3>
+            <p class="text-sm text-slate-600 mb-6">
+                Semua jawaban yang telah kamu isi dan skor saat ini akan dihapus permanen. Kamu yakin ingin mereset?
+            </p>
+            <div class="flex items-center justify-end gap-3">
+                <button onclick="closeResetModal()" class="px-4 py-2.5 rounded-xl border border-slate-300 text-slate-700 font-semibold text-sm hover:bg-slate-50 transition-colors">
+                    Batal
+                </button>
+                <button onclick="confirmResetQuiz()" class="px-4 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-semibold text-sm shadow-md shadow-rose-200 transition-colors">
+                    Ya, Reset Semua
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Script Utama & Integrasi Penyimpanan -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // =========================================================================
+        // BANK SOAL 30 NOMOR (PILIHAN GANDA - POSISI KUNCI ACAK & TIDAK BERPOLA)
+        // =========================================================================
+        const QUESTIONS = [
+            // --- PRISMA (1 - 5) ---
+            {
+                id: 1,
+                category: "Prisma",
+                topic: "Prisma Tegak Trapesium",
+                shape: "prisma_trapesium",
+                text: "Diketahui prisma tegak segi empat ABCD.EFGH dengan sisi alas ABCD berbentuk trapesium siku-siku (AB // CD dan siku-siku di A). Panjang AB = 18 cm, CD = 10 cm, dan tinggi trapesium AD = 6 cm. Jika luas seluruh sisi tegak prisma tersebut adalah 880 cm², volume prisma tersebut adalah ....",
+                options: ["1.440 cm³", "1.560 cm³", "1.680 cm³", "1.840 cm³"],
+                correctIndex: 2, // C
+                displayAnswer: "C. 1.680 cm³",
+                steps: [
+                    "<strong>1. Mencari sisi miring alas (BC):</strong><br>Selisih sisi sejajar = AB - CD = 18 - 10 = 8 cm.<br>Dengan tinggi trapesium AD = 6 cm, maka BC = √(8² + 6²) = √(64 + 36) = √100 = <strong>10 cm</strong>.",
+                    "<strong>2. Menghitung Keliling Alas (ABCD):</strong><br>K<sub>alas</sub> = AB + BC + CD + AD = 18 + 10 + 10 + 6 = <strong>44 cm</strong>.",
+                    "<strong>3. Mencari Tinggi Prisma (t):</strong><br>Luas sisi tegak = K<sub>alas</sub> × t → 880 = 44 × t → t = <strong>20 cm</strong>.",
+                    "<strong>4. Menghitung Volume Prisma:</strong><br>L<sub>alas</sub> = ½ × (18 + 10) × 6 = 84 cm².<br>Volume = 84 × 20 = <strong>1.680 cm³</strong>."
+                ]
+            },
+            {
+                id: 2,
+                category: "Prisma",
+                topic: "Prisma Belah Ketupat",
+                shape: "prisma_belahketupat",
+                text: "Alas sebuah prisma tegak berbentuk belah ketupat dengan panjang diagonal-diagonalnya masing-masing 16 cm dan 12 cm. Jika tinggi prisma tersebut adalah 15 cm, luas seluruh permukaan prisma tersebut adalah ....",
+                options: ["792 cm²", "696 cm²", "888 cm²", "600 cm²"],
+                correctIndex: 0, // A
+                displayAnswer: "A. 792 cm²",
+                steps: [
+                    "<strong>1. Mencari panjang sisi belah ketupat (s):</strong><br>Setengah diagonal: d₁/2 = 8 cm dan d₂/2 = 6 cm.<br>s = √(8² + 6²) = √(64 + 36) = <strong>10 cm</strong>.",
+                    "<strong>2. Menghitung Luas Alas & Keliling Alas:</strong><br>L<sub>alas</sub> = ½ × 16 × 12 = <strong>96 cm²</strong>.<br>K<sub>alas</sub> = 4 × 10 = <strong>40 cm</strong>.",
+                    "<strong>3. Menghitung Luas Permukaan Prisma:</strong><br>L<sub>permukaan</sub> = (2 × 96) + (40 × 15) = 192 + 600 = <strong>792 cm²</strong>."
+                ]
+            },
+            {
+                id: 3,
+                category: "Prisma",
+                topic: "Prisma Segitiga Siku-Siku",
+                shape: "prisma_segitiga",
+                text: "Sebuah prisma tegak memiliki alas berbentuk segitiga siku-siku dengan panjang sisi penyikunya 9 cm dan 12 cm. Apabila volume prisma tersebut adalah 1.080 cm³, luas seluruh sisi tegaknya adalah ....",
+                options: ["540 cm²", "648 cm²", "828 cm²", "720 cm²"],
+                correctIndex: 3, // D
+                displayAnswer: "D. 720 cm²",
+                steps: [
+                    "<strong>1. Mencari sisi miring segitiga (hipotenusa):</strong><br>c = √(9² + 12²) = √(81 + 144) = √225 = <strong>15 cm</strong>.",
+                    "<strong>2. Mencari Tinggi Prisma (t):</strong><br>L<sub>alas</sub> = ½ × 9 × 12 = 54 cm².<br>Volume = 54 × t → 1.080 = 54 × t → t = <strong>20 cm</strong>.",
+                    "<strong>3. Menghitung Luas Sisi Tegak:</strong><br>K<sub>alas</sub> = 9 + 12 + 15 = 36 cm.<br>L<sub>sisi tegak</sub> = 36 × 20 = <strong>720 cm²</strong>."
+                ]
+            },
+            {
+                id: 4,
+                category: "Prisma",
+                topic: "Prisma Segi Enam Beraturan",
+                shape: "prisma_segienam",
+                text: "Sebuah wadah berbentuk prisma tegak segi enam beraturan memiliki panjang rusuk alas 10 cm dan tinggi 20 cm. Jika diketahui √3 ≈ 1,73, volume wadah tersebut adalah ....",
+                options: ["3.460 cm³", "5.190 cm³", "4.325 cm³", "6.920 cm³"],
+                correctIndex: 1, // B
+                displayAnswer: "B. 5.190 cm³",
+                steps: [
+                    "<strong>1. Menghitung Luas Alas (Segi Enam Beraturan):</strong><br>L<sub>alas</sub> = 6 × (¼ × s² × √3) = 6 × (¼ × 100 × 1,73)<br>L<sub>alas</sub> = 150 × 1,73 = <strong>259,5 cm²</strong>.",
+                    "<strong>2. Menghitung Volume Prisma:</strong><br>Volume = 259,5 × 20 = <strong>5.190 cm³</strong>."
+                ]
+            },
+            {
+                id: 5,
+                category: "Prisma",
+                topic: "Kerangka Prisma",
+                shape: "prisma_segitiga",
+                text: "Pak Budi memiliki kawat sepanjang 4 meter yang akan digunakan untuk membuat sebuah kerangka prisma tegak segitiga sama sisi dengan panjang rusuk alas 12 cm dan tinggi prisma 18 cm. Sisa kawat Pak Budi adalah ....",
+                options: ["238 cm", "292 cm", "274 cm", "256 cm"],
+                correctIndex: 2, // C
+                displayAnswer: "C. 274 cm",
+                steps: [
+                    "<strong>1. Total panjang kawat tersedia:</strong><br>4 meter = 4 × 100 = <strong>400 cm</strong>.",
+                    "<strong>2. Panjang kawat untuk 1 kerangka prisma segitiga:</strong><br>Rusuk alas & tutup = 6 × 12 cm = 72 cm.<br>Rusuk tegak = 3 × 18 cm = 54 cm.<br>Total terpakai = 72 + 54 = <strong>126 cm</strong>.",
+                    "<strong>3. Sisa kawat:</strong><br>Sisa = 400 - 126 = <strong>274 cm</strong>."
+                ]
+            },
+
+            // --- LIMAS (6 - 10) ---
+            {
+                id: 6,
+                category: "Limas",
+                topic: "Limas Segi Empat Beraturan",
+                shape: "limas_segiempat",
+                text: "Sebuah limas tegak T.ABCD memiliki alas berbentuk persegi dengan panjang sisi 16 cm. Jika tinggi limas tersebut adalah 15 cm, luas seluruh permukaan limas T.ABCD adalah ....",
+                options: ["736 cm²", "800 cm²", "864 cm²", "928 cm²"],
+                correctIndex: 1, // B
+                displayAnswer: "B. 800 cm²",
+                steps: [
+                    "<strong>1. Mencari tinggi sisi tegak (t<sub>segitiga</sub>):</strong><br>Jarak titik pusat alas ke sisi = ½ × 16 = 8 cm.<br>t<sub>segitiga</sub> = √(15² + 8²) = √(225 + 64) = √289 = <strong>17 cm</strong>.",
+                    "<strong>2. Menghitung Luas Alas & Jumlah Luas Sisi Tegak:</strong><br>L<sub>alas</sub> = 16 × 16 = 256 cm².<br>L<sub>4 segitiga</sub> = 4 × (½ × 16 × 17) = 544 cm².",
+                    "<strong>3. Luas Permukaan Limas:</strong><br>L<sub>total</sub> = 256 + 544 = <strong>800 cm²</strong>."
+                ]
+            },
+            {
+                id: 7,
+                category: "Limas",
+                topic: "Limas Persegi Panjang",
+                shape: "limas_segiempat",
+                text: "Alas sebuah limas berbentuk persegi panjang dengan ukuran 18 cm × 10 cm. Jika volume limas tersebut adalah 720 cm³, tinggi limas tersebut adalah ....",
+                options: ["12 cm", "15 cm", "18 cm", "24 cm"],
+                correctIndex: 0, // A
+                displayAnswer: "A. 12 cm",
+                steps: [
+                    "<strong>1. Menghitung Luas Alas:</strong><br>L<sub>alas</sub> = 18 × 10 = <strong>180 cm²</strong>.",
+                    "<strong>2. Mencari Tinggi Limas:</strong><br>Volume = ⅓ × L<sub>alas</sub> × t → 720 = ⅓ × 180 × t<br>720 = 60 × t → t = <strong>12 cm</strong>."
+                ]
+            },
+            {
+                id: 8,
+                category: "Limas",
+                topic: "Limas Segi Empat Beraturan",
+                shape: "limas_segiempat",
+                text: "Diketahui limas persegi T.PQRS dengan keliling alas 48 cm. Jika tinggi segitiga sisi tegaknya adalah 10 cm, volume limas tersebut adalah ....",
+                options: ["288 cm³", "480 cm³", "576 cm³", "384 cm³"],
+                correctIndex: 3, // D
+                displayAnswer: "D. 384 cm³",
+                steps: [
+                    "<strong>1. Mencari sisi alas (s):</strong><br>s = 48 / 4 = <strong>12 cm</strong>. Setengah sisi alas = 6 cm.",
+                    "<strong>2. Mencari tinggi limas (t):</strong><br>t<sub>limas</sub> = √(10² - 6²) = √(100 - 36) = √64 = <strong>8 cm</strong>.",
+                    "<strong>3. Menghitung Volume Limas:</strong><br>Volume = ⅓ × (12 × 12) × 8 = 48 × 8 = <strong>384 cm³</strong>."
+                ]
+            },
+            {
+                id: 9,
+                category: "Limas",
+                topic: "Limas Belah Ketupat",
+                shape: "limas_segiempat",
+                text: "Sebuah limas memiliki alas berbentuk belah ketupat dengan panjang diagonal 14 cm dan 24 cm. Jika tinggi limas tersebut adalah 18 cm, volume limas tersebut adalah ....",
+                options: ["1.008 cm³", "1.512 cm³", "2.016 cm³", "3.024 cm³"],
+                correctIndex: 0, // A
+                displayAnswer: "A. 1.008 cm³",
+                steps: [
+                    "<strong>1. Menghitung Luas Alas Belah Ketupat:</strong><br>L<sub>alas</sub> = ½ × 14 × 24 = 7 × 24 = <strong>168 cm²</strong>.",
+                    "<strong>2. Menghitung Volume Limas:</strong><br>Volume = ⅓ × 168 × 18 = 168 × 6 = <strong>1.008 cm³</strong>."
+                ]
+            },
+            {
+                id: 10,
+                category: "Limas",
+                topic: "Atap Bangunan Bentuk Limas",
+                shape: "limas_segiempat",
+                text: "Atap sebuah gazebo berbentuk limas segi empat beraturan dengan panjang sisi alas 4 m dan tinggi sisi tegak 3 m. Jika bagian luar atap akan dicat dengan biaya Rp25.000 per m², biaya yang dibutuhkan adalah ....",
+                options: ["Rp400.000", "Rp800.000", "Rp600.000", "Rp1.000.000"],
+                correctIndex: 2, // C
+                displayAnswer: "C. Rp600.000",
+                steps: [
+                    "<strong>1. Menghitung Luas Selubung Atap (4 Segitiga):</strong><br>L<sub>atap</sub> = 4 × (½ × 4 × 3) = 4 × 6 = <strong>24 m²</strong>.",
+                    "<strong>2. Menghitung Biaya Pengecatan:</strong><br>Biaya = 24 m² × Rp25.000 = <strong>Rp600.000</strong>."
+                ]
+            },
+
+            // --- TABUNG (11 - 16) ---
+            {
+                id: 11,
+                category: "Tabung",
+                topic: "Luas Permukaan Tabung",
+                shape: "tabung",
+                text: "Sebuah tabung tertutup memiliki panjang jari-jari alas 14 cm dan tinggi 25 cm. Dengan menggunakan π = 22/7, luas seluruh permukaan tabung tersebut adalah ....",
+                options: ["2.200 cm²", "2.816 cm²", "4.048 cm²", "3.432 cm²"],
+                correctIndex: 3, // D
+                displayAnswer: "D. 3.432 cm²",
+                steps: [
+                    "<strong>1. Diketahui:</strong> r = 14 cm, t = 25 cm, π = 22/7.",
+                    "<strong>2. Menghitung Luas Permukaan:</strong><br>L = 2 × π × r × (r + t)<br>L = 2 × (22/7) × 14 × (14 + 25)<br>L = 88 × 39 = <strong>3.432 cm²</strong>."
+                ]
+            },
+            {
+                id: 12,
+                category: "Tabung",
+                topic: "Volume Tabung (Diketahui Keliling Alas)",
+                shape: "tabung",
+                text: "Keliling alas sebuah kaleng berbentuk tabung adalah 66 cm. Jika tinggi kaleng tersebut adalah 20 cm dan π = 22/7, volume kaleng tersebut adalah ....",
+                options: ["6.930 cm³", "3.465 cm³", "13.860 cm³", "27.720 cm³"],
+                correctIndex: 0, // A
+                displayAnswer: "A. 6.930 cm³",
+                steps: [
+                    "<strong>1. Mencari jari-jari alas (r):</strong><br>K = 2 × π × r → 66 = 2 × (22/7) × r<br>r = (66 × 7) / 44 = <strong>21/2 cm</strong> (10,5 cm).",
+                    "<strong>2. Menghitung Volume Tabung:</strong><br>V = (22/7) × (21/2) × (21/2) × 20 = <strong>6.930 cm³</strong>."
+                ]
+            },
+            {
+                id: 13,
+                category: "Tabung",
+                topic: "Tabung Tanpa Tutup",
+                shape: "tabung",
+                text: "Sebuah gelas berbentuk tabung tanpa tutup memiliki diameter 10 cm dan tinggi 12 cm. Dengan menggunakan π = 3,14, luas permukaan gelas tersebut adalah ....",
+                options: ["376,8 cm²", "533,8 cm²", "455,3 cm²", "690,8 cm²"],
+                correctIndex: 2, // C
+                displayAnswer: "C. 455,3 cm²",
+                steps: [
+                    "<strong>1. Diketahui:</strong> d = 10 cm → r = 5 cm, t = 12 cm, π = 3,14.",
+                    "<strong>2. Menghitung Luas Alas + Luas Selimut:</strong><br>L<sub>alas</sub> = 3,14 × 5² = 78,5 cm².<br>L<sub>selimut</sub> = 2 × 3,14 × 5 × 12 = 376,8 cm².",
+                    "<strong>3. Total Luas:</strong><br>L = 78,5 + 376,8 = <strong>455,3 cm²</strong>."
+                ]
+            },
+            {
+                id: 14,
+                category: "Tabung",
+                topic: "Perubahan Volume Tabung",
+                shape: "tabung",
+                text: "Sebuah drum berbentuk tabung memiliki volume 450 liter. Jika dibuat drum baru yang jari-jarinya diperbesar 2 kali semula dan tingginya diperkecil menjadi ⅓ kali semula, volume drum yang baru adalah ....",
+                options: ["300 liter", "600 liter", "900 liter", "1.200 liter"],
+                correctIndex: 1, // B
+                displayAnswer: "B. 600 liter",
+                steps: [
+                    "<strong>1. Perbandingan Volume:</strong><br>V<sub>baru</sub> = π × (2r)² × (⅓t) = (4/3) × V<sub>lama</sub>.",
+                    "<strong>2. Menghitung Volume Baru:</strong><br>V<sub>baru</sub> = (4/3) × 450 liter = <strong>600 liter</strong>."
+                ]
+            },
+            {
+                id: 15,
+                category: "Tabung",
+                topic: "Kenaikan Tinggi Air dalam Tabung",
+                shape: "tabung",
+                text: "Sebuah bejana berbentuk tabung berjari-jari 10 cm berisi air setinggi 15 cm. Ke dalam bejana dimasukkan 3 buah bola besi yang masing-masing berjari-jari 5 cm hingga tenggelam seluruhnya. Kenaikan tinggi air dalam tabung adalah ....",
+                options: ["2,5 cm", "3,75 cm", "7,5 cm", "5 cm"],
+                correctIndex: 3, // D
+                displayAnswer: "D. 5 cm",
+                steps: [
+                    "<strong>1. Persamaan Kesetaraan Volume:</strong><br>V<sub>kenaikan air</sub> = 3 × V<sub>bola</sub><br>π × R<sub>tabung</sub>² × Δt = 3 × (4/3 × π × r<sub>bola</sub>³).",
+                    "<strong>2. Menghitung Δt:</strong><br>10² × Δt = 4 × 5³ → 100 × Δt = 500 → Δt = <strong>5 cm</strong>."
+                ]
+            },
+            {
+                id: 16,
+                category: "Tabung",
+                topic: "Luas Selimut Tabung",
+                shape: "tabung",
+                text: "Luas selimut suatu tabung adalah 1.320 cm². Jika tinggi tabung tersebut 15 cm dan π = 22/7, volume tabung tersebut adalah ....",
+                options: ["4.620 cm³", "9.240 cm³", "6.160 cm³", "18.480 cm³"],
+                correctIndex: 1, // B
+                displayAnswer: "B. 9.240 cm³",
+                steps: [
+                    "<strong>1. Mencari jari-jari (r):</strong><br>L<sub>selimut</sub> = 2 × (22/7) × r × 15 → 1.320 = (660/7) × r → r = <strong>14 cm</strong>.",
+                    "<strong>2. Menghitung Volume Tabung:</strong><br>V = (22/7) × 14 × 14 × 15 = <strong>9.240 cm³</strong>."
+                ]
+            },
+
+            // --- KERUCUT (17 - 22) ---
+            {
+                id: 17,
+                category: "Kerucut",
+                topic: "Luas Permukaan Kerucut",
+                shape: "kerucut",
+                text: "Sebuah kerucut memiliki diameter alas 14 cm dan tinggi 24 cm. Dengan menggunakan π = 22/7, luas seluruh permukaan kerucut tersebut adalah ....",
+                options: ["550 cm²", "616 cm²", "704 cm²", "1.232 cm²"],
+                correctIndex: 2, // C
+                displayAnswer: "C. 704 cm²",
+                steps: [
+                    "<strong>1. Mencari garis pelukis (s):</strong><br>r = 7 cm, t = 24 cm → s = √(7² + 24²) = √625 = <strong>25 cm</strong>.",
+                    "<strong>2. Menghitung Luas Permukaan Kerucut:</strong><br>L = π × r × (r + s) = (22/7) × 7 × (7 + 25) = 22 × 32 = <strong>704 cm²</strong>."
+                ]
+            },
+            {
+                id: 18,
+                category: "Kerucut",
+                topic: "Volume Kerucut",
+                shape: "kerucut",
+                text: "Diketahui luas selimut sebuah kerucut adalah 550 cm². Jika panjang garis pelukisnya adalah 25 cm dan π = 22/7, volume kerucut tersebut adalah ....",
+                options: ["1.232 cm³", "1.540 cm³", "3.696 cm³", "4.928 cm³"],
+                correctIndex: 0, // A
+                displayAnswer: "A. 1.232 cm³",
+                steps: [
+                    "<strong>1. Mencari jari-jari (r):</strong><br>550 = (22/7) × r × 25 → r = <strong>7 cm</strong>.",
+                    "<strong>2. Mencari tinggi kerucut (t):</strong><br>t = √(25² - 7²) = <strong>24 cm</strong>.",
+                    "<strong>3. Menghitung Volume Kerucut:</strong><br>V = ⅓ × (22/7) × 7 × 7 × 24 = <strong>1.232 cm³</strong>."
+                ]
+            },
+            {
+                id: 19,
+                category: "Kerucut",
+                topic: "Juring Lingkaran Menjadi Kerucut",
+                shape: "kerucut",
+                text: "Selembar karton berbentuk juring lingkaran dengan sudut pusat 216° dan jari-jari 20 cm akan dibuat menjadi selimut kerucut. Jari-jari alas kerucut yang terbentuk adalah ....",
+                options: ["8 cm", "10 cm", "15 cm", "12 cm"],
+                correctIndex: 3, // D
+                displayAnswer: "D. 12 cm",
+                steps: [
+                    "<strong>1. Hubungan Juring dan Kerucut:</strong><br>Jari-jari juring menjadi garis pelukis kerucut (s = 20 cm).",
+                    "<strong>2. Menghitung Jari-jari Alas Kerucut:</strong><br>r = (216° / 360°) × 20 = (3/5) × 20 = <strong>12 cm</strong>."
+                ]
+            },
+            {
+                id: 20,
+                category: "Kerucut",
+                topic: "Topi Ulang Tahun (Kerucut Tanpa Alas)",
+                shape: "kerucut",
+                text: "Sebuah topi ulang tahun berbentuk kerucut tanpa alas memiliki jari-jari 9 cm dan tinggi 12 cm. Jika akan dibuat 10 buah topi yang sama dengan π = 3,14, luas karton minimal yang diperlukan adalah ....",
+                options: ["3.391,2 cm²", "4.239 cm²", "6.782,4 cm²", "5.086,8 cm²"],
+                correctIndex: 1, // B
+                displayAnswer: "B. 4.239 cm²",
+                steps: [
+                    "<strong>1. Mencari garis pelukis (s):</strong><br>s = √(9² + 12²) = <strong>15 cm</strong>.",
+                    "<strong>2. Luas 10 topi (selimut kerucut):</strong><br>L<sub>total</sub> = 10 × (3,14 × 9 × 15) = 10 × 423,9 = <strong>4.239 cm²</strong>."
+                ]
+            },
+            {
+                id: 21,
+                category: "Kerucut",
+                topic: "Kerucut Terpancung (Cap Lampu)",
+                shape: "kerucut",
+                text: "Sebuah kap lampu berbentuk kerucut terpancung memiliki jari-jari lingkaran atas 6 cm, jari-jari lingkaran bawah 12 cm, dan tinggi 8 cm. Jika π = 3,14, luas bahan kap lampu tersebut (atas dan bawah terbuka) adalah ....",
+                options: ["452,16 cm²", "565,2 cm²", "678,24 cm²", "1.130,4 cm²"],
+                correctIndex: 1, // B
+                displayAnswer: "B. 565,2 cm²",
+                steps: [
+                    "<strong>1. Mencari garis pelukis bagian terpancung (s):</strong><br>s = √((12 - 6)² + 8²) = √(36 + 64) = <strong>10 cm</strong>.",
+                    "<strong>2. Menghitung Luas Selimut Kerucut Terpancung:</strong><br>L = π × s × (R + r) = 3,14 × 10 × (12 + 6) = <strong>565,2 cm²</strong>."
+                ]
+            },
+            {
+                id: 22,
+                category: "Kerucut",
+                topic: "Tumpukan Pasir Berbentuk Kerucut",
+                shape: "kerucut",
+                text: "Tumpukan pasir berbentuk kerucut memiliki keliling alas 132 cm dan tinggi 15 cm. Jika π = 22/7, volume tumpukan pasir tersebut adalah ....",
+                options: ["6.930 cm³", "20.790 cm³", "13.860 cm³", "3.465 cm³"],
+                correctIndex: 0, // A
+                displayAnswer: "A. 6.930 cm³",
+                steps: [
+                    "<strong>1. Mencari jari-jari (r):</strong><br>132 = 2 × (22/7) × r → r = <strong>21 cm</strong>.",
+                    "<strong>2. Menghitung Volume Kerucut:</strong><br>V = ⅓ × (22/7) × 21 × 21 × 15 = <strong>6.930 cm³</strong>."
+                ]
+            },
+
+            // --- BOLA (23 - 26) ---
+            {
+                id: 23,
+                category: "Bola",
+                topic: "Luas Permukaan Bola",
+                shape: "bola",
+                text: "Sebuah bola padat memiliki panjang diameter 21 cm. Dengan menggunakan π = 22/7, luas permukaan bola tersebut adalah ....",
+                options: ["693 cm²", "2.772 cm²", "1.386 cm²", "4.851 cm²"],
+                correctIndex: 2, // C
+                displayAnswer: "C. 1.386 cm²",
+                steps: [
+                    "<strong>1. Diketahui:</strong> d = 21 cm → r = 21/2 cm.",
+                    "<strong>2. Menghitung Luas Permukaan Bola:</strong><br>L = 4 × (22/7) × (21/2) × (21/2) = <strong>1.386 cm²</strong>."
+                ]
+            },
+            {
+                id: 24,
+                category: "Bola",
+                topic: "Belahan Bola Padat (Pejal)",
+                shape: "setengah_bola",
+                text: "Sebuah semangka berbentuk bola padat berjari-jari 14 cm dibelah menjadi dua bagian yang sama besar. Luas permukaan satu belahan semangka tersebut adalah .... (π = 22/7)",
+                options: ["1.232 cm²", "2.464 cm²", "616 cm²", "1.848 cm²"],
+                correctIndex: 3, // D
+                displayAnswer: "D. 1.848 cm²",
+                steps: [
+                    "<strong>1. Rumus Luas Belahan Bola Padat:</strong><br>L = 2πr² (lengkung) + πr² (alas datar) = 3 × π × r².",
+                    "<strong>2. Menghitung Luas:</strong><br>L = 3 × (22/7) × 14 × 14 = <strong>1.848 cm²</strong>."
+                ]
+            },
+            {
+                id: 25,
+                category: "Bola",
+                topic: "Bola di Dalam Tabung",
+                shape: "tabung_bola",
+                text: "Sebuah bola tepat masuk ke dalam sebuah tabung sehingga bola menyinggung sisi alas, sisi atas, dan selimut tabung. Jika volume bola tersebut adalah 300 cm³, volume tabung di luar bola adalah ....",
+                options: ["100 cm³", "150 cm³", "200 cm³", "450 cm³"],
+                correctIndex: 1, // B
+                displayAnswer: "B. 150 cm³",
+                steps: [
+                    "<strong>1. Perbandingan Volume:</strong><br>Perbandingan V<sub>bola</sub> : V<sub>tabung</sub> = 2 : 3.",
+                    "<strong>2. Menghitung Volume di Luar Bola:</strong><br>V<sub>tabung</sub> = (3/2) × 300 = 450 cm³.<br>Volume di luar bola = 450 - 300 = <strong>150 cm³</strong>."
+                ]
+            },
+            {
+                id: 26,
+                category: "Bola",
+                topic: "Mencari Jari-jari dari Volume Bola",
+                shape: "bola",
+                text: "Diketahui volume sebuah bola adalah 4.851 cm³. Apabila π = 22/7, panjang jari-jari bola tersebut adalah ....",
+                options: ["10,5 cm", "7 cm", "14 cm", "21 cm"],
+                correctIndex: 0, // A
+                displayAnswer: "A. 10,5 cm",
+                steps: [
+                    "<strong>1. Substitusi ke Rumus Volume Bola:</strong><br>4.851 = (4/3) × (22/7) × r³ = (88/21) × r³.",
+                    "<strong>2. Menyelesaikan r:</strong><br>r³ = 9.261 / 8 → r = 21 / 2 = <strong>10,5 cm</strong>."
+                ]
+            },
+
+            // --- KUBUS, BALOK & GABUNGAN (27 - 30) ---
+            {
+                id: 27,
+                category: "Gabungan",
+                topic: "Gabungan Tabung dan Kerucut",
+                shape: "tabung_kerucut",
+                text: "Sebuah bandul timah terdiri dari tabung dan kerucut yang alasnya berimpit dengan diameter 14 cm. Tinggi tabung 12 cm dan tinggi keseluruhan bandul adalah 36 cm. Jika π = 22/7, volume bandul tersebut adalah ....",
+                options: ["2.464 cm³", "5.544 cm³", "3.080 cm³", "3.696 cm³"],
+                correctIndex: 2, // C
+                displayAnswer: "C. 3.080 cm³",
+                steps: [
+                    "<strong>1. Identifikasi Ukuran:</strong><br>r = 7 cm, t<sub>tabung</sub> = 12 cm, t<sub>kerucut</sub> = 36 - 12 = 24 cm.",
+                    "<strong>2. Volume Total:</strong><br>V<sub>tabung</sub> = (22/7) × 7² × 12 = 1.848 cm³.<br>V<sub>kerucut</sub> = ⅓ × (22/7) × 7² × 24 = 1.232 cm³.<br>V<sub>total</sub> = 1.848 + 1.232 = <strong>3.080 cm³</strong>."
+                ]
+            },
+            {
+                id: 28,
+                category: "Gabungan",
+                topic: "Gabungan Tabung dan Setengah Bola (Kapsul)",
+                shape: "kapsul",
+                text: "Sebuah tangki gas berbentuk tabung dengan kedua ujungnya berbentuk setengah bola memiliki panjang total 26 dm dan diameter 14 dm. Jika π = 22/7, luas seluruh permukaan tangki tersebut adalah ....",
+                options: ["836 dm²", "1.144 dm²", "990 dm²", "1.452 dm²"],
+                correctIndex: 1, // B
+                displayAnswer: "B. 1.144 dm²",
+                steps: [
+                    "<strong>1. Identifikasi Ukuran:</strong><br>r = 7 dm, t<sub>tabung</sub> = 26 - 14 = 12 dm.",
+                    "<strong>2. Luas Total Permukaan:</strong><br>L<sub>selimut tabung</sub> = 2 × (22/7) × 7 × 12 = 528 dm².<br>L<sub>bola utuh</sub> = 4 × (22/7) × 7 × 7 = 616 dm².<br>L<sub>total</sub> = 528 + 616 = <strong>1.144 dm²</strong>."
+                ]
+            },
+            {
+                id: 29,
+                category: "Gabungan",
+                topic: "Gabungan Kubus dan Limas",
+                shape: "kubus_limas",
+                text: "Sebuah bangun ruang tersusun dari kubus dengan panjang rusuk 12 cm dan sebuah limas segi empat beraturan yang alasnya berimpit dengan tutup kubus. Jika tinggi limas 8 cm, luas permukaan bangun gabungan tersebut adalah ....",
+                options: ["1.104 cm²", "864 cm²", "1.056 cm²", "960 cm²"],
+                correctIndex: 3, // D
+                displayAnswer: "D. 960 cm²",
+                steps: [
+                    "<strong>1. Luas 5 Sisi Kubus:</strong><br>L<sub>kubus</sub> = 5 × 12 × 12 = 720 cm².",
+                    "<strong>2. Luas 4 Sisi Tegak Limas:</strong><br>t<sub>segitiga</sub> = √(8² + 6²) = 10 cm.<br>L<sub>limas</sub> = 4 × (½ × 12 × 10) = 240 cm².",
+                    "<strong>3. Luas Permukaan Total:</strong><br>L<sub>total</sub> = 720 + 240 = <strong>960 cm²</strong>."
+                ]
+            },
+            {
+                id: 30,
+                category: "Gabungan",
+                topic: "Balok (Perbandingan Rusuk)",
+                shape: "balok",
+                text: "Perbandingan panjang, lebar, dan tinggi sebuah balok adalah 4 : 3 : 2. Jika luas seluruh permukaan balok tersebut adalah 468 cm², volume balok tersebut adalah ....",
+                options: ["648 cm³", "432 cm³", "512 cm³", "864 cm³"],
+                correctIndex: 0, // A
+                displayAnswer: "A. 648 cm³",
+                steps: [
+                    "<strong>1. Mencari nilai x:</strong><br>468 = 2 × [(4x)(3x) + (4x)(2x) + (3x)(2x)] → 234 = 26x² → x² = 9 → x = 3.",
+                    "<strong>2. Ukuran Sebenarnya & Volume:</strong><br>p = 12 cm, l = 9 cm, t = 6 cm.<br>Volume = 12 × 9 × 6 = <strong>648 cm³</strong>."
+                ]
+            }
+        ];
+
+        // =========================================================================
+        // ILUSTRASI SVG DINAMIS UNTUK SETIAP JENIS BANGUN RUANG
+        // =========================================================================
+        function getShapeSVG(shape) {
+            const commonAttrs = `class="w-44 h-36 text-indigo-600" viewBox="0 0 200 160" fill="none" xmlns="http://www.w3.org/2000/svg"`;
+            switch (shape) {
+                case "prisma_trapesium":
+                    return `<svg ${commonAttrs}>
+                        <polygon points="45,45 125,45 145,75 45,75" fill="#e0e7ff" stroke="#4f46e5" stroke-width="2"/>
+                        <polygon points="45,105 125,105 145,135 45,135" fill="#c7d2fe" fill-opacity="0.5" stroke="#4f46e5" stroke-width="2"/>
+                        <line x1="45" y1="45" x2="45" y2="105" stroke="#4f46e5" stroke-width="2" stroke-dasharray="4 3"/>
+                        <line x1="125" y1="45" x2="125" y2="105" stroke="#4f46e5" stroke-width="2"/>
+                        <line x1="145" y1="75" x2="145" y2="135" stroke="#4f46e5" stroke-width="2"/>
+                        <line x1="45" y1="75" x2="45" y2="135" stroke="#4f46e5" stroke-width="2"/>
+                        <text x="100" y="152" font-size="11" fill="#475569" text-anchor="middle" font-weight="600">Prisma Trapesium Siku-Siku</text>
+                    </svg>`;
+                case "prisma_belahketupat":
+                    return `<svg ${commonAttrs}>
+                        <polygon points="100,25 145,45 100,65 55,45" fill="#e0e7ff" stroke="#4f46e5" stroke-width="2"/>
+                        <polygon points="100,95 145,115 100,135 55,115" fill="#c7d2fe" fill-opacity="0.5" stroke="#4f46e5" stroke-width="2"/>
+                        <line x1="55" y1="45" x2="55" y2="115" stroke="#4f46e5" stroke-width="2"/>
+                        <line x1="145" y1="45" x2="145" y2="115" stroke="#4f46e5" stroke-width="2"/>
+                        <line x1="100" y1="65" x2="100" y2="135" stroke="#4f46e5" stroke-width="2"/>
+                        <line x1="100" y1="25" x2="100" y2="95" stroke="#4f46e5" stroke-width="1.5" stroke-dasharray="4 3"/>
+                        <text x="100" y="152" font-size="11" fill="#475569" text-anchor="middle" font-weight="600">Prisma Belah Ketupat</text>
+                    </svg>`;
+                case "prisma_segitiga":
+                    return `<svg ${commonAttrs}>
+                        <polygon points="65,45 135,45 95,22" fill="#e0e7ff" stroke="#4f46e5" stroke-width="2"/>
+                        <polygon points="65,120 135,120 95,97" fill="#c7d2fe" fill-opacity="0.5" stroke="#4f46e5" stroke-width="2"/>
+                        <line x1="65" y1="45" x2="65" y2="120" stroke="#4f46e5" stroke-width="2"/>
+                        <line x1="135" y1="45" x2="135" y2="120" stroke="#4f46e5" stroke-width="2"/>
+                        <line x1="95" y1="22" x2="95" y2="97" stroke="#4f46e5" stroke-width="1.5" stroke-dasharray="4 3"/>
+                        <text x="100" y="146" font-size="11" fill="#475569" text-anchor="middle" font-weight="600">Prisma Tegak Segitiga</text>
+                    </svg>`;
+                case "prisma_segienam":
+                    return `<svg ${commonAttrs}>
+                        <polygon points="75,25 125,25 145,42 125,58 75,58 55,42" fill="#e0e7ff" stroke="#4f46e5" stroke-width="2"/>
+                        <polygon points="75,95 125,95 145,112 125,128 75,128 55,112" fill="#c7d2fe" fill-opacity="0.4" stroke="#4f46e5" stroke-width="2"/>
+                        <line x1="55" y1="42" x2="55" y2="112" stroke="#4f46e5" stroke-width="2"/>
+                        <line x1="75" y1="58" x2="75" y2="128" stroke="#4f46e5" stroke-width="2"/>
+                        <line x1="125" y1="58" x2="125" y2="128" stroke="#4f46e5" stroke-width="2"/>
+                        <line x1="145" y1="42" x2="145" y2="112" stroke="#4f46e5" stroke-width="2"/>
+                        <text x="100" y="148" font-size="11" fill="#475569" text-anchor="middle" font-weight="600">Prisma Segi Enam Beraturan</text>
+                    </svg>`;
+                case "limas_segiempat":
+                    return `<svg ${commonAttrs}>
+                        <polygon points="55,120 125,120 145,95 75,95" fill="#e0e7ff" stroke="#4f46e5" stroke-width="2"/>
+                        <line x1="100" y1="25" x2="55" y2="120" stroke="#4f46e5" stroke-width="2"/>
+                        <line x1="100" y1="25" x2="125" y2="120" stroke="#4f46e5" stroke-width="2"/>
+                        <line x1="100" y1="25" x2="145" y2="95" stroke="#4f46e5" stroke-width="2"/>
+                        <line x1="100" y1="25" x2="75" y2="95" stroke="#4f46e5" stroke-width="1.5" stroke-dasharray="4 3"/>
+                        <line x1="100" y1="25" x2="100" y2="108" stroke="#ef4444" stroke-width="1.5" stroke-dasharray="3 3"/>
+                        <circle cx="100" cy="108" r="2.5" fill="#ef4444"/>
+                        <text x="100" y="146" font-size="11" fill="#475569" text-anchor="middle" font-weight="600">Limas Tegak Segi Empat</text>
+                    </svg>`;
+                case "tabung":
+                    return `<svg ${commonAttrs}>
+                        <ellipse cx="100" cy="35" rx="42" ry="13" fill="#e0e7ff" stroke="#4f46e5" stroke-width="2"/>
+                        <path d="M58 35 V115 A42 13 0 0 0 142 115 V35" fill="#c7d2fe" fill-opacity="0.35" stroke="#4f46e5" stroke-width="2"/>
+                        <path d="M58 115 A42 13 0 0 1 142 115" stroke="#4f46e5" stroke-width="1.5" stroke-dasharray="4 3"/>
+                        <line x1="100" y1="35" x2="142" y2="35" stroke="#ef4444" stroke-width="1.5"/>
+                        <text x="121" y="31" font-size="10" fill="#ef4444" font-weight="bold">r</text>
+                        <text x="150" y="78" font-size="10" fill="#4f46e5" font-weight="bold">t</text>
+                        <text x="100" y="148" font-size="11" fill="#475569" text-anchor="middle" font-weight="600">Tabung (Silinder)</text>
+                    </svg>`;
+                case "kerucut":
+                    return `<svg ${commonAttrs}>
+                        <path d="M100 22 L56 115 A44 13 0 0 0 144 115 Z" fill="#e0e7ff" fill-opacity="0.6" stroke="#4f46e5" stroke-width="2"/>
+                        <path d="M56 115 A44 13 0 0 1 144 115" stroke="#4f46e5" stroke-width="1.5" stroke-dasharray="4 3"/>
+                        <line x1="100" y1="22" x2="100" y2="115" stroke="#ef4444" stroke-width="1.5" stroke-dasharray="3 3"/>
+                        <line x1="100" y1="115" x2="144" y2="115" stroke="#ef4444" stroke-width="1.5"/>
+                        <text x="93" y="75" font-size="10" fill="#ef4444" font-weight="bold">t</text>
+                        <text x="120" y="111" font-size="10" fill="#ef4444" font-weight="bold">r</text>
+                        <text x="130" y="68" font-size="10" fill="#4f46e5" font-weight="bold">s</text>
+                        <text x="100" y="148" font-size="11" fill="#475569" text-anchor="middle" font-weight="600">Kerucut</text>
+                    </svg>`;
+                case "bola":
+                    return `<svg ${commonAttrs}>
+                        <circle cx="100" cy="75" r="48" fill="#e0e7ff" fill-opacity="0.7" stroke="#4f46e5" stroke-width="2"/>
+                        <ellipse cx="100" cy="75" rx="48" ry="14" stroke="#4f46e5" stroke-width="1.5" stroke-dasharray="4 3"/>
+                        <line x1="100" y1="75" x2="148" y2="75" stroke="#ef4444" stroke-width="1.5"/>
+                        <circle cx="100" cy="75" r="2.5" fill="#ef4444"/>
+                        <text x="124" y="70" font-size="10" fill="#ef4444" font-weight="bold">r</text>
+                        <text x="100" y="146" font-size="11" fill="#475569" text-anchor="middle" font-weight="600">Bola</text>
+                    </svg>`;
+                case "setengah_bola":
+                    return `<svg ${commonAttrs}>
+                        <path d="M50 65 A50 50 0 0 0 150 65 Z" fill="#c7d2fe" fill-opacity="0.6" stroke="#4f46e5" stroke-width="2"/>
+                        <ellipse cx="100" cy="65" rx="50" ry="14" fill="#e0e7ff" stroke="#4f46e5" stroke-width="2"/>
+                        <line x1="100" y1="65" x2="150" y2="65" stroke="#ef4444" stroke-width="1.5"/>
+                        <text x="125" y="60" font-size="10" fill="#ef4444" font-weight="bold">r</text>
+                        <text x="100" y="142" font-size="11" fill="#475569" text-anchor="middle" font-weight="600">Belahan Bola Padat</text>
+                    </svg>`;
+                case "tabung_bola":
+                    return `<svg ${commonAttrs}>
+                        <ellipse cx="100" cy="30" rx="40" ry="11" fill="#e0e7ff" stroke="#4f46e5" stroke-width="2"/>
+                        <path d="M60 30 V110 A40 11 0 0 0 140 110 V30" stroke="#4f46e5" stroke-width="2"/>
+                        <circle cx="100" cy="70" r="40" fill="#818cf8" fill-opacity="0.35" stroke="#ef4444" stroke-width="1.8"/>
+                        <text x="100" y="145" font-size="11" fill="#475569" text-anchor="middle" font-weight="600">Bola Menyinggung Tabung</text>
+                    </svg>`;
+                case "tabung_kerucut":
+                    return `<svg ${commonAttrs}>
+                        <path d="M100 18 L62 65 H138 Z" fill="#c7d2fe" stroke="#4f46e5" stroke-width="2"/>
+                        <ellipse cx="100" cy="65" rx="38" ry="10" fill="#e0e7ff" stroke="#4f46e5" stroke-width="2"/>
+                        <path d="M62 65 V120 A38 10 0 0 0 138 120 V65" fill="#e0e7ff" fill-opacity="0.5" stroke="#4f46e5" stroke-width="2"/>
+                        <text x="100" y="148" font-size="11" fill="#475569" text-anchor="middle" font-weight="600">Gabungan Kerucut & Tabung</text>
+                    </svg>`;
+                case "kapsul":
+                    return `<svg ${commonAttrs}>
+                        <path d="M55 48 A27 27 0 0 0 55 102 H145 A27 27 0 0 0 145 48 Z" fill="#e0e7ff" stroke="#4f46e5" stroke-width="2"/>
+                        <ellipse cx="55" cy="75" rx="8" ry="27" stroke="#4f46e5" stroke-width="1.5" stroke-dasharray="3 3"/>
+                        <ellipse cx="145" cy="75" rx="8" ry="27" stroke="#4f46e5" stroke-width="1.5" stroke-dasharray="3 3"/>
+                        <text x="100" y="135" font-size="11" fill="#475569" text-anchor="middle" font-weight="600">Tabung & Dua Setengah Bola</text>
+                    </svg>`;
+                case "kubus_limas":
+                    return `<svg ${commonAttrs}>
+                        <polygon points="100,15 65,55 125,55" fill="#c7d2fe" stroke="#4f46e5" stroke-width="2"/>
+                        <polygon points="100,15 125,55 142,42" fill="#a5b4fc" stroke="#4f46e5" stroke-width="2"/>
+                        <rect x="65" y="55" width="60" height="60" fill="#e0e7ff" stroke="#4f46e5" stroke-width="2"/>
+                        <polygon points="125,55 142,42 142,102 125,115" fill="#c7d2fe" stroke="#4f46e5" stroke-width="2"/>
+                        <text x="100" y="142" font-size="11" fill="#475569" text-anchor="middle" font-weight="600">Gabungan Kubus & Limas</text>
+                    </svg>`;
+                default:
+                    return `<svg ${commonAttrs}>
+                        <rect x="50" y="50" width="80" height="55" fill="#e0e7ff" stroke="#4f46e5" stroke-width="2"/>
+                        <polygon points="50,50 75,32 155,32 130,50" fill="#c7d2fe" stroke="#4f46e5" stroke-width="2"/>
+                        <polygon points="130,50 155,32 155,87 130,105" fill="#a5b4fc" stroke="#4f46e5" stroke-width="2"/>
+                        <text x="100" y="135" font-size="11" fill="#475569" text-anchor="middle" font-weight="600">Balok (Prisma Segi Empat)</text>
+                    </svg>`;
+            }
+        }
+
+        // =========================================================================
+        // STATE APLIKASI & PERSISTENCE (FIRESTORE + LOCAL STORAGE FALLBACK)
+        // =========================================================================
+        let currentIdx = 0;
+        let userAnswers = {}; // { [questionId]: { selectedIndex: number, isCorrect: boolean, checked: boolean } }
+        let solutionVisible = false;
+        let db = null;
+        let auth = null;
+        let currentUser = null;
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'smp9-bangun-ruang-pg-quiz';
+        const LOCAL_STORAGE_KEY = 'smp9_bangun_ruang_pg_state_v1';
+
+        function loadFromLocal() {
+            try {
+                const raw = localStorage.getItem(LOCAL_STORAGE_KEY);
+                if (raw) {
+                    const parsed = JSON.parse(raw);
+                    if (parsed.userAnswers) userAnswers = parsed.userAnswers;
+                    if (typeof parsed.currentIdx === 'number') currentIdx = parsed.currentIdx;
+                }
+            } catch (e) {
+                console.warn("Gagal membaca local storage:", e);
+            }
+        }
+
+        function saveToLocal() {
+            try {
+                localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify({
+                    userAnswers,
+                    currentIdx,
+                    updatedAt: Date.now()
+                }));
+            } catch (e) {
+                console.warn("Gagal menyimpan ke local storage:", e);
+            }
+        }
+
+        // Inisialisasi Firebase Firestore untuk ketahanan lintas sesi/perangkat
+        async function initCloudStorage() {
+            try {
+                if (typeof __firebase_config === 'undefined') return;
+                const firebaseConfig = JSON.parse(__firebase_config);
+                const app = initializeApp(firebaseConfig);
+                auth = getAuth(app);
+                db = getFirestore(app);
+
+                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                    await signInWithCustomToken(auth, __initial_auth_token);
+                } else {
+                    await signInAnonymously(auth);
+                }
+
+                currentUser = auth.currentUser;
+                if (currentUser && db) {
+                    const docRef = doc(db, 'artifacts', appId, 'users', currentUser.uid, 'quizProgress', 'main');
+                    const snap = await getDoc(docRef);
+                    if (snap.exists()) {
+                        const data = snap.data();
+                        if (data.userAnswers) {
+                            userAnswers = { ...userAnswers, ...data.userAnswers };
+                        }
+                        if (typeof data.currentIdx === 'number') {
+                            currentIdx = data.currentIdx;
+                        }
+                        saveToLocal();
+                        renderAll();
+                    }
+                }
+            } catch (err) {
+                console.warn("Mode offline/lokal aktif:", err);
+                updateSyncBadge(false);
+            }
+        }
+
+        async function saveProgress() {
+            saveToLocal();
+            updateSyncBadge(true, true);
+            if (!db || !currentUser) {
+                updateSyncBadge(false);
+                return;
+            }
+            try {
+                const docRef = doc(db, 'artifacts', appId, 'users', currentUser.uid, 'quizProgress', 'main');
+                await setDoc(docRef, {
+                    userAnswers,
+                    currentIdx,
+                    updatedAt: Date.now()
+                }, { merge: true });
+                updateSyncBadge(true, false);
+            } catch (err) {
+                console.warn("Gagal sinkronisasi awan:", err);
+                updateSyncBadge(false);
+            }
+        }
+
+        function updateSyncBadge(online, syncing = false) {
+            const el = document.getElementById('sync-status');
+            if (!el) return;
+            el.classList.remove('hidden');
+            if (syncing) {
+                el.className = "hidden sm:flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-full bg-amber-50 text-amber-700 border border-amber-200";
+                el.innerHTML = `<i class="fa-solid fa-arrows-rotate fa-spin"></i><span>Menyimpan...</span>`;
+            } else if (online) {
+                el.className = "hidden sm:flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200";
+                el.innerHTML = `<i class="fa-solid fa-cloud-check"></i><span>Tersimpan Aman</span>`;
+            } else {
+                el.className = "hidden sm:flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-full bg-blue-50 text-blue-700 border border-blue-200";
+                el.innerHTML = `<i class="fa-solid fa-hard-drive"></i><span>Tersimpan Lokal</span>`;
+            }
+        }
+
+        // =========================================================================
+        // LOGIKA PILIHAN GANDA & RENDER UI
+        // =========================================================================
+        const OPTION_LETTERS = ["A", "B", "C", "D"];
+
+        window.selectOption = function(optIdx) {
+            const q = QUESTIONS[currentIdx];
+            const isCorrect = optIdx === q.correctIndex;
+
+            userAnswers[q.id] = {
+                selectedIndex: optIdx,
+                isCorrect: isCorrect,
+                checked: true
+            };
+
+            saveProgress();
+            renderQuestionCard();
+            renderNavGrid();
+            updateStats();
+        };
+
+        function showFeedback(isCorrect, title, desc) {
+            const box = document.getElementById('feedback-box');
+            const icon = document.getElementById('feedback-icon');
+            const titleEl = document.getElementById('feedback-title');
+            const descEl = document.getElementById('feedback-desc');
+
+            box.classList.remove('hidden', 'bg-emerald-50', 'border-emerald-200', 'text-emerald-900', 'bg-rose-50', 'border-rose-200', 'text-rose-900');
+
+            if (isCorrect) {
+                box.classList.add('bg-emerald-50', 'border-emerald-200', 'text-emerald-900');
+                icon.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-600"></i>`;
+            } else {
+                box.classList.add('bg-rose-50', 'border-rose-200', 'text-rose-900');
+                icon.innerHTML = `<i class="fa-solid fa-circle-xmark text-rose-600"></i>`;
+            }
+
+            titleEl.textContent = title;
+            descEl.textContent = desc;
+        }
+
+        window.toggleSolution = function() {
+            solutionVisible = !solutionVisible;
+            updateSolutionUI();
+        };
+
+        function updateSolutionUI() {
+            const solBox = document.getElementById('solution-box');
+            const btnText = document.getElementById('solution-btn-text');
+            const btnIcon = document.getElementById('solution-btn-icon');
+
+            if (solutionVisible) {
+                solBox.classList.remove('hidden');
+                btnText.textContent = "Sembunyikan Kunci Jawaban & Pembahasan";
+                btnIcon.className = "fa-solid fa-eye-slash text-indigo-600";
+            } else {
+                solBox.classList.add('hidden');
+                btnText.textContent = "Tampilkan Kunci Jawaban & Pembahasan";
+                btnIcon.className = "fa-solid fa-eye text-indigo-600";
+            }
+        }
+
+        function renderQuestionCard() {
+            const q = QUESTIONS[currentIdx];
+            const saved = userAnswers[q.id];
+
+            // Header Badges
+            document.getElementById('question-number-badge').textContent = `Soal #${q.id}`;
+            document.getElementById('question-topic-badge').textContent = `${q.category} • ${q.topic}`;
+
+            const statusPill = document.getElementById('question-status-pill');
+            if (saved && saved.checked) {
+                if (saved.isCorrect) {
+                    statusPill.className = "text-xs font-bold px-3 py-1 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-200";
+                    statusPill.innerHTML = `<i class="fa-solid fa-check mr-1"></i> Dijawab Benar`;
+                } else {
+                    statusPill.className = "text-xs font-bold px-3 py-1 rounded-full bg-rose-100 text-rose-800 border border-rose-200";
+                    statusPill.innerHTML = `<i class="fa-solid fa-xmark mr-1"></i> Masih Salah`;
+                }
+            } else {
+                statusPill.className = "text-xs font-semibold px-3 py-1 rounded-full bg-slate-100 text-slate-600 border border-slate-200";
+                statusPill.textContent = "Belum Dijawab";
+            }
+
+            // Ilustrasi & Teks
+            document.getElementById('question-illustration').innerHTML = getShapeSVG(q.shape);
+            document.getElementById('question-text').textContent = q.text;
+
+            // Render Pilihan Ganda A, B, C, D
+            const optionsContainer = document.getElementById('options-container');
+            optionsContainer.innerHTML = "";
+
+            q.options.forEach((optText, idx) => {
+                const letter = OPTION_LETTERS[idx];
+                const isSelected = saved && saved.selectedIndex === idx;
+                const isActualCorrect = idx === q.correctIndex;
+
+                let btnClass = "w-full text-left p-4 rounded-xl border-2 transition-all flex items-center gap-3.5 cursor-pointer ";
+                let badgeClass = "w-9 h-9 rounded-lg font-extrabold text-sm flex items-center justify-center shrink-0 transition-colors ";
+
+                if (saved && saved.checked) {
+                    if (isSelected && saved.isCorrect) {
+                        btnClass += "bg-emerald-50 border-emerald-500 text-emerald-950 shadow-sm ";
+                        badgeClass += "bg-emerald-600 text-white ";
+                    } else if (isSelected && !saved.isCorrect) {
+                        btnClass += "bg-rose-50 border-rose-500 text-rose-950 shadow-sm ";
+                        badgeClass += "bg-rose-600 text-white ";
+                    } else if (!saved.isCorrect && isActualCorrect) {
+                        btnClass += "bg-emerald-50/60 border-emerald-400 text-emerald-900 ";
+                        badgeClass += "bg-emerald-500 text-white ";
+                    } else {
+                        btnClass += "bg-white border-slate-200 text-slate-500 opacity-75 hover:opacity-100 hover:border-slate-300 ";
+                        badgeClass += "bg-slate-100 text-slate-600 ";
+                    }
+                } else {
+                    btnClass += "bg-white border-slate-200 hover:border-indigo-500 hover:bg-indigo-50/40 text-slate-800 ";
+                    badgeClass += "bg-slate-100 text-slate-700 group-hover:bg-indigo-600 ";
+                }
+
+                const btn = document.createElement('button');
+                btn.type = "button";
+                btn.className = btnClass;
+                btn.onclick = () => selectOption(idx);
+
+                let statusIcon = "";
+                if (saved && saved.checked) {
+                    if (isSelected && saved.isCorrect) {
+                        statusIcon = `<i class="fa-solid fa-circle-check text-emerald-600 text-lg ml-auto"></i>`;
+                    } else if (isSelected && !saved.isCorrect) {
+                        statusIcon = `<i class="fa-solid fa-circle-xmark text-rose-600 text-lg ml-auto"></i>`;
+                    } else if (!saved.isCorrect && isActualCorrect) {
+                        statusIcon = `<i class="fa-solid fa-check text-emerald-600 text-base ml-auto"></i>`;
+                    }
+                }
+
+                btn.innerHTML = `
+                    <span class="${badgeClass}">${letter}</span>
+                    <span class="font-bold text-base sm:text-lg">${optText}</span>
+                    ${statusIcon}
+                `;
+                optionsContainer.appendChild(btn);
+            });
+
+            // Feedback Box & Visibilitas Wrapper Pembahasan
+            const feedbackBox = document.getElementById('feedback-box');
+            const solutionWrapper = document.getElementById('solution-wrapper');
+            if (saved && saved.checked) {
+                solutionWrapper.classList.remove('hidden');
+                if (saved.isCorrect) {
+                    showFeedback(true, "Benar! Jawabanmu Tepat 🎉", `Pilihan ${OPTION_LETTERS[saved.selectedIndex]} (${q.options[saved.selectedIndex]}) adalah jawaban yang benar.`);
+                } else {
+                    showFeedback(false, "Kurang Tepat!", `Jawabanmu ${OPTION_LETTERS[saved.selectedIndex]} masih salah. Kunci jawaban yang benar adalah ${q.displayAnswer}.`);
+                }
+            } else {
+                solutionWrapper.classList.add('hidden');
+                feedbackBox.classList.add('hidden');
+            }
+
+            // Pembahasan
+            document.getElementById('solution-final-badge').textContent = `Kunci: ${q.displayAnswer}`;
+            document.getElementById('solution-steps').innerHTML = q.steps.map(s => `<div class="p-3 bg-white rounded-xl border border-indigo-100">${s}</div>`).join('');
+            updateSolutionUI();
+
+            // Navigasi Prev / Next
+            document.getElementById('prev-btn').disabled = currentIdx === 0;
+            document.getElementById('next-btn').disabled = currentIdx === QUESTIONS.length - 1;
+            document.getElementById('mobile-progress-text').textContent = `Soal ${currentIdx + 1} dari ${QUESTIONS.length}`;
+        }
+
+        window.goToQuestion = function(idx) {
+            if (idx < 0 || idx >= QUESTIONS.length) return;
+            currentIdx = idx;
+            solutionVisible = false; // Otomatis hide pembahasan saat pindah soal
+            saveProgress();
+            renderQuestionCard();
+            renderNavGrid();
+        };
+
+        window.prevQuestion = function() {
+            goToQuestion(currentIdx - 1);
+        };
+
+        window.nextQuestion = function() {
+            goToQuestion(currentIdx + 1);
+        };
+
+        window.filterNavGrid = function() {
+            renderNavGrid();
+        };
+
+        function renderNavGrid() {
+            const grid = document.getElementById('nav-grid');
+            const filterVal = document.getElementById('topic-filter').value;
+            grid.innerHTML = "";
+
+            QUESTIONS.forEach((q, idx) => {
+                if (filterVal !== "ALL" && q.category !== filterVal) return;
+
+                const saved = userAnswers[q.id];
+                const isActive = idx === currentIdx;
+
+                let baseClasses = "h-10 rounded-xl font-bold text-sm flex items-center justify-center transition-all cursor-pointer ";
+                
+                if (saved && saved.checked) {
+                    if (saved.isCorrect) {
+                        baseClasses += "bg-emerald-500 text-white hover:bg-emerald-600 shadow-sm ";
+                    } else {
+                        baseClasses += "bg-rose-500 text-white hover:bg-rose-600 shadow-sm ";
+                    }
+                } else {
+                    baseClasses += "bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-200 ";
+                }
+
+                if (isActive) {
+                    baseClasses += "ring-2 ring-offset-2 ring-indigo-600 scale-105 ";
+                }
+
+                const btn = document.createElement('button');
+                btn.className = baseClasses;
+                btn.textContent = q.id;
+                btn.title = `${q.category}: ${q.topic}`;
+                btn.onclick = () => goToQuestion(idx);
+                grid.appendChild(btn);
+            });
+        }
+
+        function updateStats() {
+            let correct = 0;
+            let wrong = 0;
+
+            QUESTIONS.forEach(q => {
+                const ans = userAnswers[q.id];
+                if (ans && ans.checked) {
+                    if (ans.isCorrect) correct++;
+                    else wrong++;
+                }
+            });
+
+            const empty = QUESTIONS.length - (correct + wrong);
+            const answeredPercent = Math.round(((correct + wrong) / QUESTIONS.length) * 100);
+
+            document.getElementById('score-display').textContent = `${correct} / ${QUESTIONS.length}`;
+            document.getElementById('stat-correct').textContent = correct;
+            document.getElementById('stat-wrong').textContent = wrong;
+            document.getElementById('stat-empty').textContent = empty;
+            document.getElementById('progress-percent').textContent = `${answeredPercent}%`;
+            document.getElementById('progress-bar').style.width = `${answeredPercent}%`;
+        }
+
+        // Modal Reset
+        window.openResetModal = function() {
+            document.getElementById('reset-modal').classList.remove('hidden');
+        };
+
+        window.closeResetModal = function() {
+            document.getElementById('reset-modal').classList.add('hidden');
+        };
+
+        window.confirmResetQuiz = function() {
+            userAnswers = {};
+            currentIdx = 0;
+            solutionVisible = false;
+            saveProgress();
+            renderAll();
+            closeResetModal();
+        };
+
+        function renderAll() {
+            renderQuestionCard();
+            renderNavGrid();
+            updateStats();
+        }
+
+        // =========================================================================
+        // BOOTSTRAP APLIKASI SAAT HALAMAN DIMUAT
+        // =========================================================================
+        loadFromLocal();
+        renderAll();
+        initCloudStorage();
+    </script>
+</body>
+</html>
